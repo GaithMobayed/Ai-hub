@@ -1,31 +1,31 @@
-import { useState } from 'react';
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import ListSubheader from '@mui/material/ListSubheader';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import { useColorScheme } from '@mui/material/styles';
-import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
-import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
-import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import SettingsBrightnessRoundedIcon from '@mui/icons-material/SettingsBrightnessRounded';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import { useNavigate } from 'react-router';
-import { paths } from '@/shared/config/paths';
-import { useSideNav } from '@/shared/layout';
+import { useState } from "react";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import ListSubheader from "@mui/material/ListSubheader";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import { useColorScheme } from "@mui/material/styles";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
+import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import SettingsBrightnessRoundedIcon from "@mui/icons-material/SettingsBrightnessRounded";
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import { useNavigate } from "react-router";
+import { paths } from "@/shared/config/paths";
+import { useSideNav } from "@/shared/layout";
+import { useAuthStore } from "@/shared/stores/auth.store";
 
-// TODO(Phase 3): read the signed-in user from the auth store
-const user = { name: 'Ada Lovelace', email: 'ada@example.com' };
+
 
 const themeOptions = [
-  { value: 'light', label: 'Light', icon: LightModeRoundedIcon },
-  { value: 'dark', label: 'Dark', icon: DarkModeRoundedIcon },
-  { value: 'system', label: 'System', icon: SettingsBrightnessRoundedIcon },
+  { value: "light", label: "Light", icon: LightModeRoundedIcon },
+  { value: "dark", label: "Dark", icon: DarkModeRoundedIcon },
+  { value: "system", label: "System", icon: SettingsBrightnessRoundedIcon },
 ] as const;
 
 /** Avatar button + account menu, rendered in the sidebar's footer slot. */
@@ -36,10 +36,12 @@ export function UserMenu() {
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
 
+  // TODO(Phase 3): read the signed-in user from the auth store
+const user = useAuthStore((state)=>state.user?? null);
   const initials = user.name
-    .split(' ')
+    .split(" ")
     .map((part) => part[0])
-    .join('')
+    .join("")
     .slice(0, 2)
     .toUpperCase();
 
@@ -50,6 +52,11 @@ export function UserMenu() {
     navigate(to);
   };
 
+  const handleSignOut = () => {
+    useAuthStore.getState().clearSession();
+    goTo(paths.login);
+  };
+
   return (
     <Box sx={{ p: 1 }}>
       <ListItemButton
@@ -57,9 +64,22 @@ export function UserMenu() {
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={(event) => setAnchorEl(event.currentTarget)}
-        sx={{ borderRadius: 2, gap: 1.5, px: 1, justifyContent: collapsed ? 'center' : 'flex-start' }}
+        sx={{
+          borderRadius: 2,
+          gap: 1.5,
+          px: 1,
+          justifyContent: collapsed ? "center" : "flex-start",
+        }}
       >
-        <Avatar sx={{ width: 32, height: 32, fontSize: 14, bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+        <Avatar
+          sx={{
+            width: 32,
+            height: 32,
+            fontSize: 14,
+            bgcolor: "primary.main",
+            color: "primary.contrastText",
+          }}
+        >
           {initials}
         </Avatar>
         {!collapsed && (
@@ -67,8 +87,8 @@ export function UserMenu() {
             primary={user.name}
             secondary={user.email}
             slotProps={{
-              primary: { variant: 'body2', noWrap: true },
-              secondary: { variant: 'caption', noWrap: true },
+              primary: { variant: "body2", noWrap: true },
+              secondary: { variant: "caption", noWrap: true },
             }}
           />
         )}
@@ -78,8 +98,11 @@ export function UserMenu() {
         anchorEl={anchorEl}
         open={open}
         onClose={close}
-        anchorOrigin={{ vertical: 'top', horizontal: collapsed ? 'right' : 'left' }}
-        transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: collapsed ? "right" : "left",
+        }}
+        transformOrigin={{ vertical: "bottom", horizontal: "left" }}
         slotProps={{ paper: { sx: { minWidth: 232 } } }}
       >
         <MenuItem onClick={() => goTo(paths.settings)}>
@@ -89,18 +112,27 @@ export function UserMenu() {
           Settings
         </MenuItem>
         <Divider />
-        <ListSubheader sx={{ lineHeight: '32px', bgcolor: 'transparent' }}>Theme</ListSubheader>
+        <ListSubheader sx={{ lineHeight: "32px", bgcolor: "transparent" }}>
+          Theme
+        </ListSubheader>
         {themeOptions.map((option) => (
-          <MenuItem key={option.value} selected={mode === option.value} onClick={() => setMode(option.value)}>
+          <MenuItem
+            key={option.value}
+            selected={mode === option.value}
+            onClick={() => setMode(option.value)}
+          >
             <ListItemIcon>
               <option.icon fontSize="small" />
             </ListItemIcon>
             <ListItemText>{option.label}</ListItemText>
-            {mode === option.value && <CheckRoundedIcon fontSize="small" sx={{ ml: 2 }} />}
+            {mode === option.value && (
+              <CheckRoundedIcon fontSize="small" sx={{ ml: 2 }} />
+            )}
           </MenuItem>
         ))}
         <Divider />
-        <MenuItem onClick={() => goTo(paths.login)}>
+
+        <MenuItem onClick={handleSignOut}>
           <ListItemIcon>
             <LogoutRoundedIcon fontSize="small" />
           </ListItemIcon>

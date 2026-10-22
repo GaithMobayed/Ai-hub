@@ -72,7 +72,6 @@ export function AppShell(slots: SideNavSlots) {
       <Box component="main" sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         {!isDesktop && <TopBar onOpenNav={() => setMobileOpen(true)} />}
         <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto', position: 'relative' }}>
-          {/* Shown only on a page's first load; later navigations keep the old page until the chunk is ready */}
           <Suspense fallback={<LinearProgress sx={{ position: 'absolute', inset: '0 0 auto 0' }} />}>
             <Outlet />
           </Suspense>
